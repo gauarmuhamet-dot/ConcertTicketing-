@@ -277,7 +277,6 @@ target/site/jacoco/index.html
 
 On the development Windows computer, Maven was run using IntelliJ IDEA's bundled Maven installation with a custom local repository and JaCoCo data-file path to avoid local environment issues.
 
-## 14. UML Class Diagram
 
 ```mermaid
 classDiagram
@@ -296,22 +295,100 @@ classDiagram
         +findTicket(id)
     }
 
-    class SeatingChart
-    class DynamicPricingEngine
-    class SeatReservation
-    class ReservationRepository
+    class SeatingChart {
+        -availableSeats
+        +isAvailable(seatNumber) boolean
+        +reserveSeat(seatNumber) void
+        +releaseSeat(seatNumber) void
+        +getAvailableSeatCount() int
+    }
 
-    class Ticket
-    class TicketRepository
-    class TicketPrinter
-    class FraudChecker
+    class DynamicPricingEngine {
+        -BASE_PRICE
+        +calculatePrice(seatNumber) double
+    }
 
-    class AccessControlGate
-    class RefundService
+    class SeatReservation {
+        -reservationId
+        -seatNumber
+        -price
+        -status
+        +reserve() void
+        +cancel() void
+        +getStatus() Status
+    }
 
-    class ChainRecord
-    class ChainRepository
-    class ChainStatus
+    class ReservationRepository {
+        -filePath
+        +save(reservation) void
+        +findAll() List
+        +findById(reservationId) SeatReservation
+    }
+
+    class Ticket {
+        -ticketId
+        -reservationId
+        -seatNumber
+        -price
+        -status
+        +markUsed() void
+        +refund() void
+        +getStatus() Status
+    }
+
+    class TicketRepository {
+        -filePath
+        +save(ticket) void
+        +findAll() List
+        +findById(ticketId) Ticket
+    }
+
+    class TicketPrinter {
+        +printTicket(ticket) String
+        +saveTicket(ticket, directory) void
+    }
+
+    class FraudChecker {
+        -registeredTickets
+        +registerTicket(ticket) void
+        +isValid(ticket) boolean
+        +validateTicket(ticket) void
+        +getRegisteredTicketCount() int
+    }
+
+    class AccessControlGate {
+        -repository
+        +validateTicket(ticketId) boolean
+        +allowEntry(ticketId) boolean
+    }
+
+    class RefundService {
+        -repository
+        +refundTicket(ticketId) boolean
+    }
+
+    class ChainRecord {
+        -reservationId
+        -status
+        +getReservationId() String
+        +getStatus() ChainStatus
+        +setStatus(status) void
+    }
+
+    class ChainRepository {
+        -filePath
+        +save(record) void
+        +findAll() List
+        +findById(reservationId) ChainRecord
+    }
+
+    class ChainStatus {
+        <<enumeration>>
+        PENDING_B
+        PENDING_C
+        COMPLETED
+        COMPENSATED
+    }
 
     ConcertTicketingFacade --> SeatingChart
     ConcertTicketingFacade --> DynamicPricingEngine
@@ -331,6 +408,8 @@ classDiagram
     ChainRecord --> ChainStatus
     AccessControlGate --> TicketRepository
     RefundService --> TicketRepository
+    TicketPrinter ..> Ticket
+    FraudChecker ..> Ticket
 ```
 ## 15. Conclusion
 
