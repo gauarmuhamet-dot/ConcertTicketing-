@@ -19,7 +19,7 @@ The system uses two facades to provide simple interfaces to multiple internal cl
 
 ## 3. Three Independent Subsystems
 
-### Subsystem A — Reservation
+### Subsystem A - Reservation
 
 Main classes:
 
@@ -36,7 +36,7 @@ Responsibilities:
 - Prevent double booking
 - Save reservations in CSV files
 
-### Subsystem B — Ticket Processing
+### Subsystem B - Ticket Processing
 
 Main classes:
 
@@ -53,7 +53,7 @@ Responsibilities:
 - Perform fraud checks
 - Manage ticket statuses
 
-### Subsystem C — Access Control
+### Subsystem C - Access Control
 
 Main classes:
 
@@ -107,20 +107,20 @@ The booking process follows three stages:
 
 **A → B → C**
 
-### Step A — Reservation
+### Step A - Reservation
 
 1. Check seat availability.
 2. Calculate the ticket price.
 3. Create and save a reservation.
 4. Save the chain status as `PENDING_B`.
 
-### Step B — Ticket Processing
+### Step B - Ticket Processing
 
 1. Create a ticket.
 2. Save the ticket in CSV storage.
 3. Update the chain status to `PENDING_C`.
 
-### Step C — Access Control
+### Step C - Access Control
 
 1. Validate the issued ticket using `AccessControlGate`.
 2. Keep the ticket in the `ISSUED` status.
@@ -142,10 +142,10 @@ Main files:
 The workflow uses these statuses:
 
 
-- `PENDING_B` — Reservation completed; ticket processing is pending.
-- `PENDING_C` — Ticket processing completed; finalization is pending.
-- `COMPLETED` — All booking stages completed.
-- `COMPENSATED` — Failed booking was rolled back.
+- `PENDING_B` - Reservation completed; ticket processing is pending.
+- `PENDING_C` - Ticket processing completed; finalization is pending.
+- `COMPLETED` - All booking stages completed.
+- `COMPENSATED` - Failed booking was rolled back.
 ## 7. Failure Simulation and Compensation
 
 The system supports simulated failures at steps B and C.
