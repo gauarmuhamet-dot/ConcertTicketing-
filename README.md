@@ -217,7 +217,7 @@ The facade hides the coordination between subsystems.
 
 This reduces coupling and makes client code easier to understand and maintain.
 
-## 10. Facade vs Adapter — Reflection
+## 10. Facade vs Adapter - Reflection
 
 Facade and Adapter are structural design patterns, but they solve different problems.
 
