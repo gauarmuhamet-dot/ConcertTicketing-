@@ -416,3 +416,68 @@ classDiagram
 Concert Ticketing System demonstrates the Facade Design Pattern, separation of responsibilities, persistent data storage, coordinated booking operations, failure compensation, recovery after restart, and automated testing.
 
 The two facades simplify interaction with the internal subsystems and make the application easier to use and maintain.
+
+## 16. Assignment 5 — Strategy Design Pattern
+
+### Overview
+
+Assignment 5 introduces interchangeable algorithms for concert ticket pricing and seat selection. Both algorithm families use the Strategy pattern, allowing the application to replace behavior at runtime without rewriting its context classes.
+
+### Strategy classes and responsibilities (SRP)
+
+| Class | Responsibility |
+| --- | --- |
+| `PricingStrategy` | Defines the contract for ticket price calculation. |
+| `RegularPricingStrategy` | Returns the standard ticket price. |
+| `EarlyBirdPricingStrategy` | Applies advance-purchase pricing based on days before the concert. |
+| `DemandPricingStrategy` | Calculates prices using demand supplied by an external data abstraction. |
+| `PricingContext` | Delegates price calculation to a replaceable pricing strategy. |
+| `PricingSelector` | Selects a pricing algorithm using purchase timing plus demand conditions. |
+| `DemandDataSource` | Defines a contract for retrieving demand measurements. |
+| `SimulatedDemandDataSource` | Supplies simulated demand measurements for local execution. |
+| `OldPricingCalculator` | Preserves the original conditional pricing implementation for refactoring comparison. |
+| `SeatSelectionStrategy` | Defines the contract for selecting an available concert seat. |
+| `CheapestSeatStrategy` | Selects a seat according to the cheapest-seat ordering rule. |
+| `ClosestSeatStrategy` | Selects a seat according to the closest-seat ordering rule. |
+| `BalancedSeatStrategy` | Selects the middle seat from a sorted availability list. |
+| `SeatSelectionContext` | Delegates seat selection to a replaceable seat strategy. |
+| `SeatSelectionSelector` | Chooses a seat algorithm from a customer preference. |
+| `StrategyDemo` | Demonstrates pricing, seat selection, automatic selection, runtime replacement. |
+
+### Why Strategy instead of State or Template Method?
+
+Strategy is appropriate because concert ticket prices and seat choices can be calculated using different algorithms. Each algorithm implements a common interface. The client or selector chooses an implementation, while the context delegates work to it. For example, regular pricing returns the base price, early-bird pricing considers how far in advance the ticket is purchased, and demand pricing responds to demand data. These are alternatives for the same operation, not steps in one fixed workflow.
+
+The State pattern is different. It models an object whose behavior changes according to its internal lifecycle state, often with transitions between states. In this application, pricing algorithms are selected according to business rules or user choice rather than lifecycle transitions. A pricing strategy does not represent a ticket moving from issued to used or refunded.
+
+Template Method is also different. It defines the overall algorithm in a base class, leaving selected steps for subclasses to override. Our pricing and seat selection implementations do not share one inherited algorithm skeleton. Instead, independent classes implement small interfaces. This avoids forcing unrelated algorithms into a class hierarchy.
+
+Strategy therefore supports runtime replacement, separation of responsibilities, and extension through new implementations. Context classes need only the interface, while selectors contain the rules for choosing a concrete strategy. This helps follow the Open/Closed Principle: a new algorithm can be added as a new implementation, with selection rules updated separately when automatic selection is needed.
+
+### External data isolation
+
+`DemandPricingStrategy` depends on the `DemandDataSource` interface rather than directly reading a live external service. `SimulatedDemandDataSource` provides local data. Tests can substitute a fake implementation returning fixed demand values, making results deterministic.
+
+### Testing
+
+JUnit 5 tests cover pricing strategies, seat selection strategies, runtime replacement, selector behavior, plus invalid or empty inputs. `PricingStrategyTest` includes parameterized coverage. Earlier individual runs showed 5 passing legacy pricing tests, 9 passing pricing strategy tests, plus 8 passing seat strategy tests. These are individual test-run observations, not a verified count for the complete project after the final changes.
+
+Run all tests from the project root:
+
+```bash
+mvn test
+```
+
+### Demo
+
+Run `com.concertticketing.app.StrategyDemo` in IntelliJ IDEA. It demonstrates pricing results for multiple algorithms, manual switching, automatic pricing selection, plus seat selection algorithms.
+
+### Refactoring history
+
+The initial implementation placed pricing variants in `OldPricingCalculator` using conditional logic. A separate commit saved this implementation with its JUnit tests. Later commits introduced the Strategy interfaces, concrete implementations, contexts, selectors, plus tests.
+
+**Before refactoring commit:** https://github.com/gauarmuhamet-dot/ConcertTicketing-/commit/a803e180b041b79c45a42d566f94fadfc231aafe
+
+**After refactoring commit:** https://github.com/gauarmuhamet-dot/ConcertTicketing-/commit/424c60b8f28e5fa45c84f45bf49cfc1f52ca410b
+
+The same legacy pricing tests should be run at both revisions to verify behavior remains unchanged.
