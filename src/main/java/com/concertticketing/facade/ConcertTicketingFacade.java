@@ -254,4 +254,5 @@ public class ConcertTicketingFacade {
     public int getAvailableSeats() {
         return chart.getAvailableSeatCount();
     }
+
 }
